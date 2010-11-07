@@ -447,10 +447,16 @@ proc(Name, Params) ->
 
 %---------------------------------------------------------------------------
 
-build_jsonrpc_response(Id, ResultField) ->
-    {obj, [{version, <<"1.1">>},
-	   {id, Id},
-	   ResultField]}.
+build_jsonrpc_response(Id, {result, Result}) ->
+    build_jsonrpc_response(Id, Result, null);
+build_jsonrpc_response(Id, {error, Error}) ->
+    build_jsonrpc_response(Id, null, Error).
+
+build_jsonrpc_response(Id, Result, Error) ->
+    {obj, [{version, <<"1.0">>},
+           {id, Id},
+           {result, Result},
+           {error, Error}]}.
 
 expand_jsonrpc_reply(RequestId, {ResultOrError, Value}) ->
     {ResultOrError, build_jsonrpc_response(RequestId, {ResultOrError, Value}), {obj, []}};
